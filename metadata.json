@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Script Tag Generator",
+  "description": "An efficient tool for content creators to turn scripts into formatted titles and motivation tags with one-click copy options.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
