@@ -44,7 +44,7 @@ export default function App() {
   const getCombinedContent = () => {
     if (!results) return '';
     const current = results[activeTab];
-    const tagsString = current.hashtags.join(' ');
+    const tagsString = activeTab === 'facebook' ? current.hashtags.join('\n') : current.hashtags.join(' ');
     return `${current.title}\n\n${tagsString}`;
   };
 
@@ -524,7 +524,7 @@ export default function App() {
                         </span>
                       </div>
                       <button
-                        onClick={() => copySectionContent(activeData.hashtags.join(' '), 'tags')}
+                        onClick={() => copySectionContent(activeTab === 'facebook' ? activeData.hashtags.join('\n') : activeData.hashtags.join(' '), 'tags')}
                         className="text-gray-400 hover:text-brand-primary transition-colors p-1"
                         title="Copy hashtags string"
                       >
@@ -533,11 +533,11 @@ export default function App() {
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100/50 transition-colors">
-                      <div className="flex flex-wrap gap-1.5 font-mono text-xs leading-relaxed text-brand-primary font-medium">
+                      <div className={`${activeTab === 'facebook' ? 'flex flex-col gap-2' : 'flex flex-wrap gap-1.5'} font-mono text-xs leading-relaxed text-brand-primary font-medium`}>
                         {activeData.hashtags.map((tag, idx) => (
                           <span 
                             key={idx} 
-                            className="bg-orange-50/70 border border-orange-100/40 text-brand-primary px-2 py-0.5 rounded-lg select-all hover:bg-orange-100/50 transition-colors"
+                            className={`${activeTab === 'facebook' ? 'bg-orange-50/70 border border-orange-100/40 text-brand-primary px-3 py-1.5 rounded-lg select-all hover:bg-orange-100/50 transition-colors block text-left w-full' : 'bg-orange-50/70 border border-orange-100/40 text-brand-primary px-2 py-0.5 rounded-lg select-all hover:bg-orange-100/50 transition-colors'}`}
                           >
                             {tag}
                           </span>
