@@ -99,7 +99,8 @@ Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatter
             },
           });
         } catch (groundingError: any) {
-          console.warn("Grounded search failed (possible 429 quota exhaustion). Retrying with high-performance model without search...", groundingError);
+          const groundingMsg = groundingError?.message || String(groundingError);
+          console.warn("Grounded search failed (possible 429 quota exhaustion). Retrying with high-performance model without search... Note:", groundingMsg);
           usedFallback = true;
 
           const promptFallback = `You are an elite, world-class social media strategist and viral growth hacker.
@@ -159,7 +160,8 @@ Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatter
         });
 
       } catch (geminiError: any) {
-        console.warn("Both primary and API-key fallback methods failed. Using the bulletproof Smart Social Intelligence local fallback engine...", geminiError);
+        const geminiMsg = geminiError?.message || String(geminiError);
+        console.warn("Both primary and API-key fallback methods failed. Using the bulletproof Smart Social Intelligence local fallback engine... Note:", geminiMsg);
         usedLocalFallback = true;
 
         // Smart dynamic local processing based on script keywords
@@ -254,10 +256,17 @@ Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatter
           ];
         }
 
-        // Custom headline formulation
-        let firstSentence = script.trim().split('\n')[0].split(/(?<=[.!?])\s/)[0];
-        if (firstSentence.length > 50) {
-          firstSentence = firstSentence.slice(0, 47) + "...";
+        // Custom headline formulation - clean, complete, and respects word boundaries up to 120 chars
+        let line = script.trim().split('\n')[0].trim();
+        let firstSentence = line;
+        if (firstSentence.length > 120) {
+          let cut = firstSentence.slice(0, 110);
+          const lastSpace = cut.lastIndexOf(" ");
+          if (lastSpace > 40) {
+            firstSentence = cut.slice(0, lastSpace) + "...";
+          } else {
+            firstSentence = cut + "...";
+          }
         }
         if (!firstSentence || firstSentence.length < 5) {
           firstSentence = "This paradigm shift changes everything";
