@@ -76,9 +76,9 @@ SCRIPT CONTENT:
 You MUST output exactly the following fields in the response JSON:
 1. "facebookTitle": An engaging, clickable, yet natural headline for Facebook (end it with an appropriate thematic emoji).
 2. "facebookHashtags": An array of EXACTLY 5 highly targeted, trending hashtags for this topic on Facebook. (Ensure there are exactly 5).
-3. "instagramTitle": A highly viral, curiosity-inducing, aesthetic hook title for an Instagram Reel.
+3. "instagramTitle": A highly viral, curiosity-inducing hook title specifically crafted from the exact words/topic of this script (CRITICAL: Do NOT use repetitive cliché templates like "How to master this mindset in 10 seconds" or "read below" - formulate a unique hook tailored to this script).
 4. "instagramHashtags": An array of EXACTLY 15 top-ranking, active viral hashtags for this topic on Instagram. (Ensure there are exactly 15).
-5. "tiktokTitle": A bold, ultra-high-retention video hook title formulated for TikTok.
+5. "tiktokTitle": A bold, ultra-high-retention video hook title formulated strictly from the core premise of this script (CRITICAL: Do NOT use static formulas like "Stop doing this immediately" - craft a high-retention hook unique to this script).
 6. "tiktokHashtags": An array of EXACTLY 15 extremely high-velocity, organic trend hashtags for this topic on TikTok. (Ensure there are exactly 15).
 
 Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatters"). Do not include any other words in the lists. Ensure strict compliance to the counts: exactly 5 for Facebook, exactly 15 for Instagram, and exactly 15 for TikTok.`;
@@ -112,9 +112,9 @@ SCRIPT CONTENT:
 You MUST output exactly the following fields in the response JSON:
 1. "facebookTitle": An engaging, clickable, yet natural headline for Facebook (end it with an appropriate thematic emoji).
 2. "facebookHashtags": An array of EXACTLY 5 highly targeted, trending hashtags for this topic on Facebook. (Ensure there are exactly 5).
-3. "instagramTitle": A highly viral, curiosity-inducing, aesthetic hook title for an Instagram Reel.
+3. "instagramTitle": A highly viral, curiosity-inducing hook title specifically crafted from the exact words/topic of this script (CRITICAL: Do NOT use repetitive cliché templates like "How to master this mindset in 10 seconds" or "read below" - formulate a unique hook tailored to this script).
 4. "instagramHashtags": An array of EXACTLY 15 top-ranking, active viral hashtags for this topic on Instagram. (Ensure there are exactly 15).
-5. "tiktokTitle": A bold, ultra-high-retention video hook title formulated for TikTok.
+5. "tiktokTitle": A bold, ultra-high-retention video hook title formulated strictly from the core premise of this script (CRITICAL: Do NOT use static formulas like "Stop doing this immediately" - craft a high-retention hook unique to this script).
 6. "tiktokHashtags": An array of EXACTLY 15 extremely high-velocity, organic trend hashtags for this topic on TikTok. (Ensure there are exactly 15).
 
 Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatters"). Do not include any other words in the lists. Ensure strict compliance to the counts: exactly 5 for Facebook, exactly 15 for Instagram, and exactly 15 for TikTok.`;
@@ -256,28 +256,62 @@ Each hashtag in the arrays MUST start with the '#' prefix (e.g., "#MindsetMatter
           ];
         }
 
-        // Custom headline formulation - clean, complete, and respects word boundaries up to 120 chars
-        let line = script.trim().split('\n')[0].trim();
-        let firstSentence = line;
-        if (firstSentence.length > 120) {
-          let cut = firstSentence.slice(0, 110);
+        // Clean, script-derived dynamic hooks for each platform
+        const cleanLines = script.trim().split(/\r?\n/).map((l: string) => l.trim()).filter(Boolean);
+        const sentences = script
+          .replace(/\r?\n/g, ' ')
+          .split(/(?<=[.!?])\s+/)
+          .map((s: string) => s.trim().replace(/^["'“”‘’]+|["'“”‘’]+$/g, ''))
+          .filter((s: string) => s.length > 3);
+
+        const primarySnippet = cleanLines[0] || sentences[0] || "Powerful insight you need to remember";
+
+        // 1. Facebook: Clean, natural sentence with emoji
+        let fbHeadline = primarySnippet;
+        if (fbHeadline.length > 110) {
+          const cut = fbHeadline.slice(0, 100);
           const lastSpace = cut.lastIndexOf(" ");
-          if (lastSpace > 40) {
-            firstSentence = cut.slice(0, lastSpace) + "...";
-          } else {
-            firstSentence = cut + "...";
-          }
+          fbHeadline = (lastSpace > 30 ? cut.slice(0, lastSpace) : cut) + "...";
         }
-        if (!firstSentence || firstSentence.length < 5) {
-          firstSentence = "This paradigm shift changes everything";
+        if (!/[.!?✨🔥💡]$/.test(fbHeadline)) {
+          fbHeadline += " ✨";
         }
 
+        // 2. Instagram: Dynamic hook derived strictly from script content, NEVER fixed text
+        let igHeadline = "";
+        if (sentences.length > 1 && sentences[1].length > 10) {
+          let s1 = sentences[0].replace(/[.!?]+$/, '');
+          let s2 = sentences[1].replace(/[.!?]+$/, '');
+          if (s1.length + s2.length < 90) {
+            igHeadline = `${s1}: ${s2} 🤫`;
+          } else {
+            igHeadline = `${s1.slice(0, 80)} (Watch till end) 🤫`;
+          }
+        } else {
+          let s1 = primarySnippet.replace(/[.!?]+$/, '');
+          if (s1.length > 80) {
+            const cut = s1.slice(0, 75);
+            const lastSpace = cut.lastIndexOf(" ");
+            s1 = (lastSpace > 25 ? cut.slice(0, lastSpace) : cut);
+          }
+          igHeadline = `${s1} (Save this for later) 🤫`;
+        }
+
+        // 3. TikTok: Dynamic punchy retention hook strictly from the script
+        let coreHook = primarySnippet.replace(/[.!?]+$/, '');
+        if (coreHook.length > 80) {
+          const cut = coreHook.slice(0, 75);
+          const lastSpace = cut.lastIndexOf(" ");
+          coreHook = (lastSpace > 25 ? cut.slice(0, lastSpace) : cut);
+        }
+        const ttHeadline = `${coreHook} ⚡️`;
+
         const fallbackObj = {
-          facebookTitle: `${firstSentence} ✨`,
+          facebookTitle: fbHeadline,
           facebookHashtags: facebookHashtags.slice(0, 5),
-          instagramTitle: `How to master this mindset in 10 seconds (read below) 🤫`,
+          instagramTitle: igHeadline,
           instagramHashtags: instagramHashtags.slice(0, 15),
-          tiktokTitle: `Stop doing this immediately if you want to win ⚡️`,
+          tiktokTitle: ttHeadline,
           tiktokHashtags: tiktokHashtags.slice(0, 15)
         };
 
